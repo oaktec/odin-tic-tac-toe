@@ -2,5 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-.board-wrapper {
+.cell:nth-child(2n) {
+  background-color: #1e293b;
+}
+.cell:nth-child(2n + 1) {
+  background-color: #0f172a;
 }
