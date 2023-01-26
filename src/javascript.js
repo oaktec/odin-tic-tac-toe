@@ -24,6 +24,13 @@ const TicTacToe = (() => {
     handleNextTurn();
   }
 
+  function giveInput(cell) {
+    const x = Math.floor(cell / 3);
+    const y = cell % 3;
+    grid[x][y] = nextTurn;
+    Gameboard.render(grid);
+  }
+
   function handleNextTurn() {
     Gameboard.handleHumanTurn(players[nextTurn].getName(), nextTurn);
   }
@@ -35,7 +42,7 @@ const TicTacToe = (() => {
     determineFirstTurn();
   }
 
-  return { startGame };
+  return { startGame, giveInput };
 })();
 
 const Gameboard = (() => {
@@ -71,26 +78,29 @@ const Gameboard = (() => {
   function render(grid) {
     for (let x = 0; x < 3; x += 1) {
       for (let y = 0; y < 3; y += 1) {
-        cellGrid[x][y].textContent = grid[x][y];
+        cellGrid[x][y].textContent =
+          grid[x][y] === "" ? "" : SYMBOL_EMOJIS[grid[x][y]];
       }
     }
   }
 
   function handleHumanTurn(name, val) {
     infoText.textContent = `${name}'s turn! ${SYMBOL_EMOJIS[val]}`;
-    for (let x = 0; x < 3; x += 1) {
-      for (let y = 0; y < 3; y += 1) {
-        if (cellGrid[x][y].textContent === "") {
-          cellGrid[x][y].addEventListener("click", cellClickCallback(val));
-        }
+    [...gridDiv.children].forEach((cell) => {
+      if (cell.textContent === "") {
+        cell.addEventListener("click", cellClickCallback);
       }
-    }
+    });
   }
 
-  function cellClickCallback(val) {
-    return function () {
-      this.textContent = SYMBOL_EMOJIS[val];
-    };
+  function cellClickCallback(e) {
+    let index = Array.from(gridDiv.children).indexOf(e.target);
+    [...gridDiv.children].forEach((cell) => {
+      if (cell.textContent === "") {
+        cell.removeEventListener("click", cellClickCallback);
+      }
+    });
+    TicTacToe.giveInput(index);
   }
 
   function setInfoText(msg) {

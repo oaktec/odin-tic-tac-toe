@@ -6,13 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="../styles/output.css" />
+    <script src="./javascript.js" defer></script>
   </head>
   <body class="bg-gray-800 flex flex-col items-center">
     <div class="text-center mt-12">
       <h1 class="text-4xl text-yellow-500 font-bold">Tic Tac Toe</h1>
-      <p class="text-xl text-white mt-12">Instructions</p>
+      <p id="info-text" class="hide text-xl text-white mt-12"></p>
+      <button
+        id="start-button"
+        class="text-xl mt-12 text-white hover:text-slate-800 hover:bg-white border-solid border-white border-4 px-8 rounded-xl"
+      >
+        Start Game
+      </button>
+      <div id="names-input" class="grid mt-12 gap-2 grid-cols-[1fr_5rem_1fr]">
+        <input
+          class="text-right"
+          type="text"
+          id="player-1-name"
+          placeholder="Player 1"
+        />
+        <span class="text-white">vs</span>
+        <input type="text" id="player-2-name" placeholder="Player 2" />
+      </div>
       <div
-        class="board-wrapper mt-12 grid grid-cols-3 grid-rows-3 min-h-50vmin min-w-50vmin border-solid border-2 border-sky-700"
+        id="board-wrapper"
+        class="hide mt-12 grid grid-cols-3 grid-rows-3 min-h-50vmin min-w-50vmin border-solid border-2 border-sky-700"
       >
         <div class="cell"></div>
         <div class="cell"></div>
