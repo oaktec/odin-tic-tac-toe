@@ -29,6 +29,8 @@ const TicTacToe = (() => {
     const y = cell % 3;
     grid[x][y] = nextTurn;
     Gameboard.render(grid);
+    nextTurn = nextTurn === 0 ? 1 : 0;
+    handleNextTurn();
   }
 
   function handleNextTurn() {
@@ -94,7 +96,7 @@ const Gameboard = (() => {
   }
 
   function cellClickCallback(e) {
-    let index = Array.from(gridDiv.children).indexOf(e.target);
+    const index = Array.from(gridDiv.children).indexOf(e.target);
     [...gridDiv.children].forEach((cell) => {
       if (cell.textContent === "") {
         cell.removeEventListener("click", cellClickCallback);
