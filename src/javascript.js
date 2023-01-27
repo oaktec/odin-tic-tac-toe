@@ -37,6 +37,17 @@ const TicTacToe = (() => {
 
   function checkGameState(lastX, lastY) {
     // return true if game continues
+    for (let i = 0; i < 4; i += 1) {
+      if (i === 3) {
+        Gameboard.setInfoText("DRAW!");
+        Gameboard.displayNewGameButton();
+        return false;
+      }
+      if (grid[i].some((x) => x === "")) {
+        break;
+      }
+    }
+
     let gameWon = false;
     if (
       (grid[lastX][0] === grid[lastX][1] &&
@@ -84,6 +95,7 @@ const Gameboard = (() => {
   const SYMBOL_EMOJIS = ["⭕", "❌"];
   // getDomElements
   const startButton = document.querySelector("#start-button");
+  const newGameButton = document.querySelector("#new-game-button");
   const infoText = document.querySelector("#info-text");
   const namesInputDiv = document.querySelector("#names-input");
   const p1NameInput = document.querySelector("#player-1-name");
@@ -143,7 +155,7 @@ const Gameboard = (() => {
   }
 
   function displayNewGameButton() {
-    startButton.classList.remove("hide");
+    newGameButton.classList.remove("hide");
   }
 
   return { render, setInfoText, handleHumanTurn, displayNewGameButton };

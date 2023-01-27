@@ -525,6 +525,10 @@ video {
   display: grid;
 }
 
+.\!grid {
+  display: grid !important;
+}
+
 .min-h-50vmin {
   min-height: 50vmin;
 }
