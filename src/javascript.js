@@ -37,17 +37,6 @@ const TicTacToe = (() => {
 
   function checkGameState(lastX, lastY) {
     // return true if game continues
-    for (let i = 0; i < 4; i += 1) {
-      if (i === 3) {
-        Gameboard.setInfoText("DRAW!");
-        Gameboard.displayNewGameButton();
-        return false;
-      }
-      if (grid[i].some((x) => x === "")) {
-        break;
-      }
-    }
-
     let gameWon = false;
     if (
       (grid[lastX][0] === grid[lastX][1] &&
@@ -73,18 +62,32 @@ const TicTacToe = (() => {
       Gameboard.displayNewGameButton();
       return false;
     }
+    for (let i = 0; i < 4; i += 1) {
+      if (i === 3) {
+        Gameboard.setInfoText("DRAW!");
+        Gameboard.displayNewGameButton();
+        return false;
+      }
+      if (grid[i].some((x) => x === "")) {
+        break;
+      }
+    }
 
     return true;
   }
 
   function handleNextTurn() {
-    Gameboard.handleHumanTurn(players[currTurn].getName(), currTurn);
+    players[currTurn].handleTurn(currTurn, grid);
   }
 
-  function startGame(p1Name = "Player 1", p2Name = "Player 2") {
+  function startGame(p1Name, p2Name, opponentType) {
     resetGrid();
     players[0] = Player(p1Name !== "" ? p1Name : "Player 1");
-    players[1] = Player(p2Name !== "" ? p2Name : "Player 2");
+    if (opponentType === "human") {
+      players[1] = Player(p2Name !== "" ? p2Name : "Player 2");
+    } else {
+      players[1] = EasyBot();
+    }
     determineFirstTurn();
   }
 
@@ -100,6 +103,7 @@ const Gameboard = (() => {
   const namesInputDiv = document.querySelector("#names-input");
   const p1NameInput = document.querySelector("#player-1-name");
   const p2NameInput = document.querySelector("#player-2-name");
+  const p2Select = document.querySelector("#player-2-select");
   const gridDiv = document.querySelector("#board-wrapper");
   const cellGrid = [];
   for (let x = 0; x < 3; x += 1) {
@@ -112,6 +116,22 @@ const Gameboard = (() => {
   // addEventListeners
   startButton.addEventListener("click", startGame);
   newGameButton.addEventListener("click", newGame);
+  p2Select.addEventListener("change", p2selectChange);
+
+  function p2selectChange(e) {
+    switch (e.target.value) {
+      case "human":
+        p2NameInput.removeAttribute("disabled");
+        p2NameInput.value = "";
+        break;
+      case "easy":
+        p2NameInput.setAttribute("disabled", "");
+        p2NameInput.value = "Easy-bot";
+        break;
+      default:
+        break;
+    }
+  }
 
   function newGame() {
     gridDiv.classList.add("hide");
@@ -129,7 +149,7 @@ const Gameboard = (() => {
     startButton.classList.add("hide");
     namesInputDiv.classList.add("hide");
 
-    TicTacToe.startGame(p1NameInput.value, p2NameInput.value);
+    TicTacToe.startGame(p1NameInput.value, p2NameInput.value, p2Select.value);
   }
 
   function render(grid) {
@@ -150,6 +170,14 @@ const Gameboard = (() => {
     });
   }
 
+  function handleAITurn(name, nextMove) {
+    infoText.textContent = `${name} is thinking...`;
+    setTimeout(finishAITurn(nextMove), 500);
+  }
+  function finishAITurn(nextMove) {
+    return () => TicTacToe.giveInput(nextMove);
+  }
+
   function cellClickCallback(e) {
     const index = Array.from(gridDiv.children).indexOf(e.target);
     [...gridDiv.children].forEach((cell) => {
@@ -168,12 +196,37 @@ const Gameboard = (() => {
     newGameButton.classList.remove("hide");
   }
 
-  return { render, setInfoText, handleHumanTurn, displayNewGameButton };
+  return {
+    render,
+    setInfoText,
+    handleHumanTurn,
+    handleAITurn,
+    displayNewGameButton,
+  };
 })();
+
+const EasyBot = () => {
+  const { getName } = Player("EasyBot");
+
+  const handleTurn = (currTurn, grid) => {
+    for (;;) {
+      const nextMove = Math.floor(Math.random() * 9);
+      if (grid[Math.floor(nextMove / 3)][nextMove % 3] === "") {
+        Gameboard.handleAITurn(getName(), nextMove);
+        return;
+      }
+    }
+  };
+  return { getName, handleTurn };
+};
 
 const Player = (name) => {
   this.name = name;
   const getName = () => name;
 
-  return { getName };
+  const handleTurn = (currTurn) => {
+    Gameboard.handleHumanTurn(name, currTurn);
+  };
+
+  return { getName, handleTurn };
 };

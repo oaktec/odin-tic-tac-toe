@@ -513,6 +513,10 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+.col-start-3 {
+  grid-column-start: 3;
+}
+
 .mt-12 {
   margin-top: 3rem;
 }
