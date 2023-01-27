@@ -5,7 +5,7 @@ const TicTacToe = (() => {
 
   const grid = [];
   const players = [];
-  let nextTurn = 0;
+  let currTurn = 0;
 
   function resetGrid() {
     for (let x = 0; x < 3; x += 1) {
@@ -17,9 +17,9 @@ const TicTacToe = (() => {
 
   function determineFirstTurn() {
     if (Math.random() >= 0.5) {
-      nextTurn = NOUGHTS;
+      currTurn = NOUGHTS;
     } else {
-      nextTurn = CROSSES;
+      currTurn = CROSSES;
     }
     handleNextTurn();
   }
@@ -27,14 +27,47 @@ const TicTacToe = (() => {
   function giveInput(cell) {
     const x = Math.floor(cell / 3);
     const y = cell % 3;
-    grid[x][y] = nextTurn;
+    grid[x][y] = currTurn;
     Gameboard.render(grid);
-    nextTurn = nextTurn === 0 ? 1 : 0;
-    handleNextTurn();
+    if (checkGameState(x, y)) {
+      currTurn = currTurn === 0 ? 1 : 0;
+      handleNextTurn();
+    }
+  }
+
+  function checkGameState(lastX, lastY) {
+    // return true if game continues
+    let gameWon = false;
+    if (
+      (grid[lastX][0] === grid[lastX][1] &&
+        grid[lastX][1] === grid[lastX][2]) ||
+      (grid[0][lastY] === grid[1][lastY] && grid[1][lastY] === grid[2][lastY])
+    ) {
+      gameWon = true;
+    } else if (
+      lastX === lastY &&
+      grid[0][0] === grid[1][1] &&
+      grid[1][1] === grid[2][2]
+    ) {
+      gameWon = true;
+    } else if (
+      ((lastX === 1 && lastY === 1) || Math.abs(lastX - lastY) === 2) &&
+      grid[2][0] === grid[1][1] &&
+      grid[1][1] === grid[0][2]
+    ) {
+      gameWon = true;
+    }
+    if (gameWon) {
+      Gameboard.setInfoText(`${players[currTurn].getName()} WON!!`);
+
+      return false;
+    }
+
+    return true;
   }
 
   function handleNextTurn() {
-    Gameboard.handleHumanTurn(players[nextTurn].getName(), nextTurn);
+    Gameboard.handleHumanTurn(players[currTurn].getName(), currTurn);
   }
 
   function startGame(p1Name = "Player 1", p2Name = "Player 2") {
