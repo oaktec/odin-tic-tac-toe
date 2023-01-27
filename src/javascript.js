@@ -219,15 +219,17 @@ const HardBot = () => {
   const handleTurn = (currTurn, grid) => {
     const singArr = [...grid[0], ...grid[1], ...grid[2]];
     myTeam = currTurn;
-    minimax(singArr, currTurn);
+    minimax(singArr, currTurn, 0);
     Gameboard.handleAITurn(getName(), bestMove);
   };
 
-  const minimax = (state, currTurn) => {
+  const minimax = (state, currTurn, depth) => {
+    const thisDepth = depth + 1;
+
     // If game over return final score up chain
     const gameState = getGameState(state);
     if (gameState !== "") {
-      return score(gameState);
+      return score(gameState, thisDepth);
     }
 
     const scores = [];
@@ -238,8 +240,8 @@ const HardBot = () => {
         // For each possible next move, recursively search
         const possibleState = [...state];
         possibleState[i] = currTurn;
-        if (currTurn === 0) scores.push(minimax(possibleState, 1));
-        else scores.push(minimax(possibleState, 0));
+        if (currTurn === 0) scores.push(minimax(possibleState, 1, thisDepth));
+        else scores.push(minimax(possibleState, 0, thisDepth));
         moves.push(i);
       }
     }
@@ -257,14 +259,14 @@ const HardBot = () => {
     return min;
   };
 
-  const score = (gameState) => {
+  const score = (gameState, depth) => {
     if (gameState === myTeam) {
-      return 10;
+      return 10 - depth;
     }
     if (gameState === "over") {
       return 0;
     }
-    return -10;
+    return depth - 10;
   };
 
   const getGameState = (state) => {
