@@ -59,7 +59,7 @@ const TicTacToe = (() => {
     }
     if (gameWon) {
       Gameboard.setInfoText(`${players[currTurn].getName()} WON!!`);
-
+      Gameboard.displayNewGameButton();
       return false;
     }
 
@@ -142,7 +142,11 @@ const Gameboard = (() => {
     infoText.textContent = msg;
   }
 
-  return { render, setInfoText, handleHumanTurn };
+  function displayNewGameButton() {
+    startButton.classList.remove("hide");
+  }
+
+  return { render, setInfoText, handleHumanTurn, displayNewGameButton };
 })();
 
 const Player = (name) => {
