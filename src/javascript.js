@@ -111,6 +111,16 @@ const Gameboard = (() => {
 
   // addEventListeners
   startButton.addEventListener("click", startGame);
+  newGameButton.addEventListener("click", newGame);
+
+  function newGame() {
+    gridDiv.classList.add("hide");
+    newGameButton.classList.add("hide");
+    infoText.classList.add("hide");
+
+    namesInputDiv.classList.remove("hide");
+    startButton.classList.remove("hide");
+  }
 
   function startGame() {
     gridDiv.classList.remove("hide");
