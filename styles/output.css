@@ -1898,6 +1898,18 @@ video {
   line-height: 1;
 }
 
+.text-\[16vmin\] {
+  font-size: 16vmin;
+}
+
+.text-\[12vmin\] {
+  font-size: 12vmin;
+}
+
+.text-\[10vmin\] {
+  font-size: 10vmin;
+}
+
 .font-bold {
   font-weight: 700;
 }
