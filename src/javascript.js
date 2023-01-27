@@ -85,8 +85,10 @@ const TicTacToe = (() => {
     players[0] = Player(p1Name !== "" ? p1Name : "Player 1");
     if (opponentType === "human") {
       players[1] = Player(p2Name !== "" ? p2Name : "Player 2");
-    } else {
+    } else if (opponentType === "easy") {
       players[1] = EasyBot();
+    } else {
+      players[1] = HardBot();
     }
     determineFirstTurn();
   }
@@ -127,6 +129,10 @@ const Gameboard = (() => {
       case "easy":
         p2NameInput.setAttribute("disabled", "");
         p2NameInput.value = "Easy-bot";
+        break;
+      case "hard":
+        p2NameInput.setAttribute("disabled", "");
+        p2NameInput.value = "Impossi-bot";
         break;
       default:
         break;
@@ -204,6 +210,91 @@ const Gameboard = (() => {
     displayNewGameButton,
   };
 })();
+
+const HardBot = () => {
+  const { getName } = Player("ImpossiBot");
+  let myTeam;
+  let bestMove;
+
+  const handleTurn = (currTurn, grid) => {
+    const singArr = [...grid[0], ...grid[1], ...grid[2]];
+    myTeam = currTurn;
+    minimax(singArr, currTurn);
+    Gameboard.handleAITurn(getName(), bestMove);
+  };
+
+  const minimax = (state, currTurn) => {
+    const gameState = getGameState(state);
+    if (gameState !== "") {
+      return score(gameState);
+    }
+
+    const scores = [];
+    const moves = [];
+
+    for (let i = 0; i < 9; i += 1) {
+      if (state[i] === "") {
+        const possibleState = [...state];
+        possibleState[i] = currTurn;
+        if (currTurn === 0) scores.push(minimax(possibleState, 1));
+        else scores.push(minimax(possibleState, 0));
+        moves.push(i);
+      }
+    }
+
+    if (currTurn === myTeam) {
+      const max = Math.max(...scores);
+      bestMove = moves[scores.indexOf(max)];
+      return max;
+    }
+
+    const min = Math.min(...scores);
+    bestMove = moves[scores.indexOf(min)];
+    return min;
+  };
+
+  const score = (gameState) => {
+    if (gameState === myTeam) {
+      return 10;
+    }
+    if (gameState === "over") {
+      return 0;
+    }
+    return -10;
+  };
+
+  const getGameState = (state) => {
+    for (let i = 0; i < 3; i += 1) {
+      const i3 = i * 3;
+      if (
+        state[i3] !== "" &&
+        state[i3] === state[i3 + 1] &&
+        state[i3 + 1] === state[i3 + 2]
+      ) {
+        return state[i3];
+      }
+      if (
+        state[i] !== "" &&
+        state[i] === state[i + 3] &&
+        state[i + 3] === state[i + 6]
+      ) {
+        return state[i];
+      }
+    }
+    if (state[4] !== "") {
+      if (
+        (state[0] === state[4] && state[4] === state[8]) ||
+        (state[2] === state[4] && state[4] === state[6])
+      ) {
+        return state[4];
+      }
+    }
+    if (state.some((x) => x === "")) return "";
+    return "over";
+  };
+
+  return { getName, handleTurn };
+};
 
 const EasyBot = () => {
   const { getName } = Player("EasyBot");
