@@ -224,6 +224,7 @@ const HardBot = () => {
   };
 
   const minimax = (state, currTurn) => {
+    // If game over return final score up chain
     const gameState = getGameState(state);
     if (gameState !== "") {
       return score(gameState);
@@ -234,6 +235,7 @@ const HardBot = () => {
 
     for (let i = 0; i < 9; i += 1) {
       if (state[i] === "") {
+        // For each possible next move, recursively search
         const possibleState = [...state];
         possibleState[i] = currTurn;
         if (currTurn === 0) scores.push(minimax(possibleState, 1));
@@ -242,12 +244,14 @@ const HardBot = () => {
       }
     }
 
+    // Assume highest score (best move) for my moves
     if (currTurn === myTeam) {
       const max = Math.max(...scores);
       bestMove = moves[scores.indexOf(max)];
       return max;
     }
 
+    // Assume lowest score (best move) for opp moves
     const min = Math.min(...scores);
     bestMove = moves[scores.indexOf(min)];
     return min;
